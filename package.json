@@ -1,0 +1,15 @@
+{
+  "name": "dsh-codex-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Codex plugin that connects OpenAI Codex to DeepSeek Harness (DSH).",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.15"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\"",
+    "smoke": "node scripts/smoke.mjs"
+  }
+}

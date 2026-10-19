@@ -1,0 +1,37 @@
+{
+  "name": "dsh-bridge",
+  "version": "0.1.0",
+  "description": "Connect OpenAI Codex to DeepSeek Harness (DSH): delegate tasks to DSH and read its sessions.",
+  "author": {
+    "name": "wangziheng598-collab"
+  },
+  "homepage": "https://github.com/wangziheng598-collab/dsh-codex-bridge",
+  "repository": "https://github.com/wangziheng598-collab/dsh-codex-bridge",
+  "license": "MIT",
+  "keywords": [
+    "deepseek",
+    "deepseek-harness",
+    "dsh",
+    "codex",
+    "mcp",
+    "agent",
+    "bridge"
+  ],
+  "mcpServers": "./.mcp.json",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "DeepSeek Harness",
+    "shortDescription": "Delegate tasks to DSH and read its sessions",
+    "longDescription": "Bridges Codex to DeepSeek Harness running on this machine. Codex can hand a self-contained task to DSH, continue that work in the same DSH session, review transcripts of earlier DSH runs, and diagnose the connection. DSH runs as a separate agent with its own tools and needs a DeepSeek API key.",
+    "developerName": "wangziheng598-collab",
+    "category": "Engineering",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/wangziheng598-collab/dsh-codex-bridge",
+    "brandColor": "#4D6BFE",
+    "composerIcon": "./assets/composer-icon.png",
+    "logo": "./assets/logo.png"
+  }
+}

@@ -1,0 +1,5 @@
+interface:
+  display_name: "DeepSeek Harness"
+  short_description: "Delegate tasks to DSH and review its sessions"
+policy:
+  allow_implicit_invocation: true

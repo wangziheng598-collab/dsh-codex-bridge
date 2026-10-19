@@ -1,0 +1,23 @@
+{
+  "name": "dsh-codex",
+  "owner": {
+    "name": "wangziheng598-collab",
+    "url": "https://github.com/wangziheng598-collab"
+  },
+  "description": "Plugins that connect OpenAI Codex to DeepSeek Harness (DSH).",
+  "plugins": [
+    {
+      "name": "dsh-bridge",
+      "source": "./plugins/dsh-bridge",
+      "description": "Delegate tasks to DeepSeek Harness (DSH), continue its sessions, and read its transcripts without leaving Codex.",
+      "category": "Engineering",
+      "keywords": [
+        "deepseek",
+        "dsh",
+        "deepseek-harness",
+        "mcp",
+        "agent"
+      ]
+    }
+  ]
+}

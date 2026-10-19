@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "dsh": {
+      "command": "node",
+      "args": [
+        "./server/main.mjs"
+      ],
+      "cwd": ".",
+      "env_vars": [
+        "PATH",
+        "Path",
+        "PATHEXT",
+        "HOME",
+        "USERPROFILE",
+        "LOCALAPPDATA",
+        "APPDATA",
+        "ProgramFiles",
+        "ProgramFiles(x86)",
+        "SystemRoot",
+        "ComSpec",
+        "TEMP",
+        "TMP",
+        "DSH_HOME",
+        "DSH_CODEX_DSH",
+        "DSH_CODEX_DEFAULT_CWD",
+        "DEEPSEEK_API_KEY"
+      ],
+      "startup_timeout_sec": 30,
+      "tool_timeout_sec": 1200
+    }
+  }
+}
