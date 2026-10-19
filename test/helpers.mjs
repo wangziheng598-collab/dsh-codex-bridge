@@ -77,3 +77,39 @@ export function startServer({ cwd = pluginRoot, env = {} } = {}) {
     getStderr: () => stderr,
   };
 }
+
+/** Send a batch of messages, close stdin immediately, and collect every response. */
+export function runBatch(messages, { env = {} } = {}) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, [serverEntry], {
+      cwd: pluginRoot,
+      env: { ...process.env, ...env },
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
+    let stdout = '';
+    let stderr = '';
+    child.stdout.setEncoding('utf8');
+    child.stdout.on('data', (chunk) => {
+      stdout += chunk;
+    });
+    child.stderr.setEncoding('utf8');
+    child.stderr.on('data', (chunk) => {
+      stderr += chunk;
+    });
+    child.on('error', reject);
+    child.on('close', () => {
+      try {
+        const parsed = stdout
+          .split('\n')
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => JSON.parse(line));
+        resolve({ messages: parsed, stderr });
+      } catch (error) {
+        reject(new Error(`invalid stdout (${error.message}): ${stdout}`));
+      }
+    });
+    child.stdin.write(`${messages.map((message) => JSON.stringify(message)).join('\n')}\n`);
+    child.stdin.end();
+  });
+}

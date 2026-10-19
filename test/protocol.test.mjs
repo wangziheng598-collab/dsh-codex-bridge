@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
 
-import { startServer } from './helpers.mjs';
+import { startServer, runBatch } from './helpers.mjs';
 
 describe('MCP protocol', () => {
   let server;
@@ -88,5 +88,21 @@ describe('MCP protocol', () => {
     const result = await server.request('tools/call', { name: 'dsh_run', arguments: {} });
     assert.equal(result.isError, true);
     assert.match(result.content[0].text, /prompt/);
+  });
+
+  it('flushes in-flight calls when stdin closes', async () => {
+    const { messages } = await runBatch([
+      {
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'initialize',
+        params: { protocolVersion: '2025-06-18', capabilities: {}, clientInfo: { name: 'batch', version: '0' } },
+      },
+      { jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'dsh_doctor', arguments: {} } },
+    ]);
+    assert.equal(messages.length, 2);
+    const doctor = messages.find((message) => message.id === 2);
+    assert.ok(doctor && doctor.result, 'received the doctor response before shutdown');
+    assert.match(doctor.result.content[0].text, /DSH bridge doctor/);
   });
 });

@@ -48,11 +48,34 @@ export function createMcpServer({ name, version, instructions = '', tools, conte
   let nextRequestId = 1;
   let clientCapabilities = {};
   let finished = false;
+  let closing = false;
   let initialized = false;
+  let activeRequests = 0;
+  const idleWaiters = [];
 
   const write = (message) => {
     if (finished) return;
     process.stdout.write(`${JSON.stringify(message)}\n`);
+  };
+
+  const markBusy = () => {
+    activeRequests += 1;
+  };
+  const markIdle = () => {
+    activeRequests = Math.max(0, activeRequests - 1);
+    if (activeRequests === 0) {
+      for (const resolve of idleWaiters.splice(0)) resolve();
+    }
+  };
+  const waitForIdle = (timeoutMs) => {
+    if (activeRequests === 0) return Promise.resolve();
+    return new Promise((resolve) => {
+      const timer = setTimeout(resolve, timeoutMs);
+      idleWaiters.push(() => {
+        clearTimeout(timer);
+        resolve();
+      });
+    });
   };
 
   const respond = (id, result) => write({ jsonrpc: '2.0', id, result });
@@ -164,7 +187,12 @@ export function createMcpServer({ name, version, instructions = '', tools, conte
     }
   };
 
-  const shutdown = (reason) => {
+  const shutdown = async (reason) => {
+    if (closing) return;
+    closing = true;
+    // A client may send a batch and close stdin immediately; let in-flight
+    // tool calls finish and write their responses before exiting.
+    await waitForIdle(10_000);
     if (finished) return;
     finished = true;
     for (const [, waiter] of pending) {
@@ -189,15 +217,18 @@ export function createMcpServer({ name, version, instructions = '', tools, conte
         log(`dropping non-JSON stdin line: ${error.message}`);
         return;
       }
-      void handleMessage(message);
+      markBusy();
+      void handleMessage(message).finally(markIdle);
     });
-    rl.on('close', () => shutdown('stdin closed'));
+    rl.on('close', () => {
+      void shutdown('stdin closed');
+    });
     process.stdin.on('error', (error) => {
       log(`stdin error: ${error.message}`);
-      shutdown('stdin error');
+      void shutdown('stdin error');
     });
-    process.on('SIGINT', () => shutdown('SIGINT'));
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => void shutdown('SIGINT'));
+    process.on('SIGTERM', () => void shutdown('SIGTERM'));
     process.on('uncaughtException', (error) => {
       log(`uncaught exception: ${error.stack || error.message}`);
     });

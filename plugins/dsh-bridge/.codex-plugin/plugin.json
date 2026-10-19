@@ -1,6 +1,6 @@
 {
   "name": "dsh-bridge",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Connect OpenAI Codex to DeepSeek Harness (DSH): delegate tasks to DSH and read its sessions.",
   "author": {
     "name": "wangziheng598-collab"

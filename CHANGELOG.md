@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1 — 2026-10-19
+
+- Drain in-flight tool calls when the client closes stdin, so a batch of requests
+  followed by EOF still receives its responses.
+
 ## 0.1.0 — 2026-10-19
 
 First release.
